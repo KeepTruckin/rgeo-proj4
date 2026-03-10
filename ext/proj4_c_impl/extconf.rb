@@ -23,9 +23,12 @@ else
     $CFLAGS << " " << extra_flags if extra_flags.strip.start_with?("-")
   end
 
-  header_dirs =
-    [
-      ::RbConfig::CONFIG["includedir"],
+  with_default_header_paths = with_config("default-header-paths", true)
+  with_default_lib_paths = with_config("default-lib-paths", true)
+
+  header_dirs = [::RbConfig::CONFIG["includedir"]]
+  if with_default_header_paths
+    header_dirs += [
       "/usr/local/include",
       "/usr/local/proj/include",
       "/usr/local/proj4/include",
@@ -37,9 +40,11 @@ else
       "/Library/Frameworks/PROJ.framework/unix/include",
       "/usr/include"
     ]
-  lib_dirs =
-    [
-      ::RbConfig::CONFIG["libdir"],
+  end
+
+  lib_dirs = [::RbConfig::CONFIG["libdir"]]
+  if with_default_lib_paths
+    lib_dirs += [
       "/usr/local/lib",
       "/usr/local/lib64",
       "/usr/local/proj/lib",
@@ -53,6 +58,7 @@ else
       "/usr/lib",
       "/usr/lib64"
     ]
+  end
   header_dirs.delete_if { |path| !::File.directory?(path) }
   lib_dirs.delete_if { |path| !::File.directory?(path) }
 
